@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/foundation.css" />
+    <script src="/static/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="grid-y grid-container
+">
+    <h1>Story Telling Programme</h1>
+
+    <h3>Story</h3>
+    <hr>
+    <ol id="story">
+    </ol>
+    <hr>
+    <div style="padding:10px;">
+        <h4>Story Sequence:-</h4>
+        <textarea rows="7" id="story_sequence"></textarea>
+    </div>
+    <hr>
+    <button id="btnsequence" class="button" style="width:150px;">Enter Sequence</button>
+    </div>
+    <script>
+        $(document).ready(function(){
+            var cnt = 1;
+            $("#btnsequence").click(function(){
+                var data = $("#story_sequence").val();
+                $("#story_sequence").val("");
+                $("#story").append("<li><div>"+data+"</div><div id='row_"+cnt+"'>Loading..</div></li>");
+                $.ajax({
+                    url:"http://localhost:5000/GetData",
+                    type:"post",
+                    dataType:"json",
+                    contentType:"application/json",
+                    async:true,
+                    data:JSON.stringify({
+                        query:data,
+                        target_id:"row_"+cnt,
+                    }),
+                    success:function(data){
+                        var target = $("#"+data.target_id);
+                        var template = "<img src='"+data.output_url+"' width='200' />";
+                        target.html("");
+                        target.append(template);
+                    },
+                    error:function(){
+                    }
+                });
+                cnt++;
+            });
+        });
+    </script>
+</body>
+</html>
