@@ -5,6 +5,7 @@
     <title>Home</title>
     <link rel="stylesheet" type="text/css" href="/static/css/foundation.css" />
     <script src="/static/jquery-3.6.0.min.js"></script>
+
 </head>
 <body>
     <div class="grid-y grid-container
@@ -13,8 +14,8 @@
 
     <h3>Story</h3>
     <hr>
-    <ol id="story">
-    </ol>
+    <div id="story">
+    </div>
     <hr>
     <div style="padding:10px;">
         <h4>Story Sequence:-</h4>
@@ -29,7 +30,7 @@
             $("#btnsequence").click(function(){
                 var data = $("#story_sequence").val();
                 $("#story_sequence").val("");
-                $("#story").append("<li><div>"+data+"</div><div id='row_"+cnt+"'>Loading..</div></li>");
+                $("#story").append("<div class='col-3'><div>"+data+"</div><div id='row_"+cnt+"'>Loading..</div></div>");
                 $.ajax({
                     url:"http://localhost:5000/GetData",
                     type:"post",
