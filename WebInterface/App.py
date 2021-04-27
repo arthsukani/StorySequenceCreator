@@ -11,6 +11,7 @@ cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 @app.route("/home")
+@app.route("/")
 def index():
     return render_template("home.html")
 

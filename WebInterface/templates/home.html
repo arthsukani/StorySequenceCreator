@@ -3,34 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <title>Home</title>
-    <link rel="stylesheet" type="text/css" href="/static/css/foundation.css" />
-    <script src="/static/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/css/foundation.css"/>
+    <style>
+        .top-bar,.top-bar-left ul,.top-bar-right ul{
+            background-color:#4040A7;
+            color:white;
+        }
+        .top-bar a{
+            color:white !important;
+        }
+        .top-bar ul{
+            border:0px;
+        }
+        .top-bar{
+            box-shadow:2px 5px 2px 0px #4040D7;
+         }
+         .story{
+            margin-top:40px;
+         }
+         body{
+            background-color:#f1f1f1;
+         }
+         .heading-title2{
+            font-family:Cursive;
+         }
+         .heading-title1{
+            background-color:#4040D7;
+            padding:15px 15px 5px 20px;
+            color:white;
+            box-shadow:2px 5px 2px 0px #4070D7;
+            border-top-left-radius:10px;
+            border-top-right-radius:10px;
+         }
 
+        .dialog-container{
+            background-color:white;
+            border-radius:10px;
+            margin:10px 20px;
+            box-shadow:2px 5px 2px 0px #4070D7;
+        }
+        .dialog-container-content{
+            padding:15px;
+        }
+        #story{
+            min-height:150px;
+        }
+        .dialog-container hr{
+            max-width:100%;
+        }
+        .sub-dialog{
+            padding:10px 20px;
+        }
+        .badge{
+            font-size:large;
+            margin-right:5px;
+         }
+        .card-divider{
+            vertical-align:middle;
+            font-size:large;
+            display:flex;
+            align-items:center;
+        }
+        .footer-row{
+            align-items:center;
+            padding:20px;
+        }
+
+    </style>
+    <script src="/static/js/vendor.js"></script>
+    <script src="/static/js/foundation.js"></script>
 </head>
 <body>
-    <div class="grid-y grid-container
-">
-    <h1>Story Telling Programme</h1>
 
-    <h3>Story</h3>
-    <hr>
-    <div id="story">
+<!-- Header Start -->
+
+<div class="top-bar">
+    <h1 style="padding-left:15px; padding-top:15px; color:white;">Image Narator</h1>
+
+    <div class="top-bar-left">
+        <ul class="dropdown menu" data-dropdown-menu>
+            <li class="menu-text"></li>
+            <!--li>
+                <a href="#">One</a>
+                <ul class="menu vertical">
+                    <li><a href="#">One</a></li>
+                    <li><a href="#">Two</a></li>
+                    <li><a href="#">Three</a></li>
+                </ul>
+            </li>
+            <li><a href="#">Two</a></li>
+            <li><a href="#">Three</a></li-->
+        </ul>
     </div>
-    <hr>
-    <div style="padding:10px;">
-        <h4>Story Sequence:-</h4>
-        <textarea rows="7" id="story_sequence"></textarea>
+    <!--div class="top-bar-right">
+        <ul class="menu">
+            <li><input type="search" placeholder="Search"></li>
+            <li>
+                <button type="button" class="button">Search</button>
+            </li>
+        </ul>
+    </div-->
+</div>
+
+<!-- Header Ends -->
+
+
+<div class="grid-y grid-container fluid  story">
+    <div class="dialog-container">
+        <h3 class="heading-title1">Story</h3>
+        <div class="dialog-container-content">
+            <hr>
+            <div id="story" class="grid-x">
+            </div>
+            <hr>
+            <div style="padding:10px;">
+                <h4 class="heading-title2">Story Sequence:-</h4>
+                <textarea rows="7" id="story_sequence"></textarea>
+            </div>
+            <hr>
+            <button id="btnsequence" class="button" style="width:150px;">Enter Sequence</button>
+            <button id="btnnewstory" class="button" style="width:150px;">New Story</button>
+        </div>
     </div>
-    <hr>
-    <button id="btnsequence" class="button" style="width:150px;">Enter Sequence</button>
-    </div>
-    <script>
+</div>
+
+<footer class="footer-row">
+    &copy Copyright 2021 By StoryCreator Developer
+</footer>
+<script>
+        $(document).foundation();
         $(document).ready(function(){
             var cnt = 1;
+            $("#story_sequence").keyup(function(key){
+                if(key.code == "Enter"){
+                   $("#btnsequence").click();
+                }
+            });
+            $("#story").on('click',".action-btn-delete",function(){
+                var value = $(this).attr("data-val");
+                var selector = "#"+value;
+
+                var bl_confirm = confirm("Do you want to delete ?");
+                console.log(bl_confirm+" "+value+ " "+selector);
+                if(bl_confirm == true){
+                    console.log("Removed");
+                    $(selector).remove();
+                }
+            });
+            $("#btnnewstory").click(function(){
+                var bl_confirm = confirm("Are you sure to create new story?");
+                if(!bl_confirm) return;
+                cnt = 1;
+                $("#story").empty();
+            });
+             $("#story").on('click',".action-btn-reset",function(){
+                var value = $(this).attr("data-val");
+                var title_value = $(this).attr("data-title");
+                var selector = "#"+title_value;
+
+                var bl_confirm = confirm("Do you want to refresh ?");
+                console.log(bl_confirm+" "+value+ " "+selector);
+                if(bl_confirm == true){
+                    var data = $(selector).html();
+                    console.log(data);
+                    $("#"+value).html("Loading..");
+                    $.ajax({
+                        url:"http://localhost:5000/GetData",
+                        type:"post",
+                        dataType:"json",
+                        contentType:"application/json",
+                        async:true,
+                        data:JSON.stringify({
+                            query:data,
+                            target_id:value,
+                        }),
+                        success:function(data){
+                            var target = $("#"+data.target_id);
+                            var template = "<p align='center'><img src='"+data.output_url+"' style='height:200px;' /></p>";
+                            target.html("");
+                            target.append(template);
+                        },
+                        error:function(){
+                        }
+                    });
+                }
+            });
             $("#btnsequence").click(function(){
                 var data = $("#story_sequence").val();
                 $("#story_sequence").val("");
-                $("#story").append("<div class='col-3'><div>"+data+"</div><div id='row_"+cnt+"'>Loading..</div></div>");
+                $("#story").append("<div id='row_container_"+cnt+"' style='border:1px solid inset; padding:5px' class='cell medium-3 large-2'><div class='card'> <div class='card-divider'> <div class='badge'>"+cnt+"</div><span id='title_"+cnt+"'> "+data+" </span></div><div class='sub-dialog' id='row_"+cnt+"'>Loading..</div>  <div class='card-section'><div class='small button-group'> <a class='button secondary action-btn-reset' data-val='row_"+cnt+"' data-title='title_"+cnt+"'>Reset</a> <a class='button alert action-btn-delete' data-val='row_container_"+cnt+"'>Delete</a> </div> </div> </div> </div>");
                 $.ajax({
                     url:"http://localhost:5000/GetData",
                     type:"post",
@@ -43,7 +204,7 @@
                     }),
                     success:function(data){
                         var target = $("#"+data.target_id);
-                        var template = "<img src='"+data.output_url+"' width='200' />";
+                        var template = "<p align='center'><img src='"+data.output_url+"' style='height:200px;' /></p>";
                         target.html("");
                         target.append(template);
                     },
@@ -53,6 +214,9 @@
                 cnt++;
             });
         });
-    </script>
+
+
+
+</script>
 </body>
 </html>
