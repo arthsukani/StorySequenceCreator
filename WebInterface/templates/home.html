@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Home</title>
     <link rel="stylesheet" type="text/css" href="/static/css/foundation.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/foundation-icons.css">
     <style>
         .top-bar,.top-bar-left ul,.top-bar-right ul{
             background-color:#4040A7;
@@ -78,7 +79,7 @@
 <!-- Header Start -->
 
 <div class="top-bar">
-    <h1 style="padding-left:15px; padding-top:15px; color:white;">Image Narator</h1>
+    <h1 style="padding-left:15px; padding-top:15px; color:white;"><i class="fi-photo"></i> Image Narator</h1>
 
     <div class="top-bar-left">
         <ul class="dropdown menu" data-dropdown-menu>
@@ -110,19 +111,19 @@
 
 <div class="grid-y grid-container fluid  story">
     <div class="dialog-container">
-        <h3 class="heading-title1">Story</h3>
+        <h3 class="heading-title1"><i class="fi-monitor"></i> Story</h3>
         <div class="dialog-container-content">
             <hr>
             <div id="story" class="grid-x">
             </div>
             <hr>
             <div style="padding:10px;">
-                <h4 class="heading-title2">Story Sequence:-</h4>
+                <h4 class="heading-title2"><i class="fi-list-bullet"></i> Story Sequence:- <button id="btnRecord" onclick="startRecord()"><i class="fi-record"></i></button></h4>
                 <textarea rows="7" id="story_sequence"></textarea>
             </div>
             <hr>
-            <button id="btnsequence" class="button" style="width:150px;">Enter Sequence</button>
-            <button id="btnnewstory" class="button" style="width:150px;">New Story</button>
+            <button id="btnsequence" class="button" style="width:150px;"><i class="fi-page-add"></i> Enter Sequence</button>
+            <button id="btnnewstory" class="button" style="width:150px;"> <i class="fi-plus"></i> New Story</button>
         </div>
     </div>
 </div>
@@ -130,6 +131,58 @@
 <footer class="footer-row">
     &copy Copyright 2021 By StoryCreator Developer
 </footer>
+<script>
+    var lastIndex = 0;
+    var blIsStart = true;
+    var grammar = '#JSGF V1.0; grammar colors; public <color> = aqua | azure | beige | bisque | black | blue | brown | chocolate | coral | crimson | cyan | fuchsia | ghostwhite | gold | goldenrod | gray | green | indigo | ivory | khaki | lavender | lime | linen | magenta | maroon | moccasin | navy | olive | orange | orchid | peru | pink | plum | purple | red | salmon | sienna | silver | snow | tan | teal | thistle | tomato | turquoise | violet | white | yellow ;'
+    console.log("Grammer Declared");
+    var recognition = new webkitSpeechRecognition();
+    console.log("Recognition Object Created");
+    var speechRecognitionList = new webkitSpeechGrammarList();
+    console.log("Creating Grammer List");
+
+    speechRecognitionList.addFromString(grammar, 1);
+    console.log("Adding Grammer to List");
+
+    recognition.grammars = speechRecognitionList;
+    recognition.continuous = true;
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    console.log("Setting Parameters");
+    var diagnostic = document.querySelector('.output');
+    var bg = document.querySelector('html');
+
+    function startRecord() {
+       if(blIsStart){
+        blIsStart = false;
+        recognition.start();
+        console.log('Ready to receive a color command.');
+        lastIndex = 0;
+        $("#btnRecord").css("color","red");
+        $("#btnRecord").animate({fontSize:"1.2em"});
+      }else{
+        blIsStart = true;
+        $("#btnRecord").css("color","black");
+        $("#btnRecord").animate({fontSize:"1em"});
+        stopRecord();
+      }
+    }
+    function stopRecord(){
+      recognition.stop();
+      console.log('Stop Receieving Color');
+    }
+
+    recognition.onresult = function(event) {
+      var word = event.results[lastIndex][0].transcript;
+      $("#story_sequence").append(word);
+
+      console.log(word);
+      lastIndex++;
+    }
+
+</script>
 <script>
         $(document).foundation();
         $(document).ready(function(){
@@ -191,7 +244,7 @@
             $("#btnsequence").click(function(){
                 var data = $("#story_sequence").val();
                 $("#story_sequence").val("");
-                $("#story").append("<div id='row_container_"+cnt+"' style='border:1px solid inset; padding:5px' class='cell medium-3 large-2'><div class='card'> <div class='card-divider'> <div class='badge'>"+cnt+"</div><span id='title_"+cnt+"'> "+data+" </span></div><div class='sub-dialog' id='row_"+cnt+"'>Loading..</div>  <div class='card-section'><div class='small button-group'> <a class='button secondary action-btn-reset' data-val='row_"+cnt+"' data-title='title_"+cnt+"'>Reset</a> <a class='button alert action-btn-delete' data-val='row_container_"+cnt+"'>Delete</a> </div> </div> </div> </div>");
+                $("#story").append("<div id='row_container_"+cnt+"' style='border:1px solid inset; padding:5px' class='cell medium-3 large-2'><div class='card'> <div class='card-divider'> <div class='badge'>"+cnt+"</div><span id='title_"+cnt+"'> "+data+" </span></div><div class='sub-dialog' id='row_"+cnt+"'>Loading..</div>  <div class='card-section'><div class='small button-group'> <a class='button secondary action-btn-reset' data-val='row_"+cnt+"' data-title='title_"+cnt+"'><i class='fi-refresh'></i> Reset</a> <a class='button alert action-btn-delete' data-val='row_container_"+cnt+"'><i class='fi-trash'></i> Delete</a> </div> </div> </div> </div>");
                 $.ajax({
                     url:"http://localhost:5000/GetData",
                     type:"post",
