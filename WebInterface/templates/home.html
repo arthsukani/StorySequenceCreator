@@ -6,6 +6,10 @@
     <link rel="stylesheet" type="text/css" href="/static/css/foundation.css"/>
     <link rel="stylesheet" type="text/css" href="/static/css/foundation-icons.css">
     <style>
+        @page {
+            size: A4 landscape;
+            margin:0 -6cm;
+        }
         .top-bar,.top-bar-left ul,.top-bar-right ul{
             background-color:#4040A7;
             color:white;
@@ -70,9 +74,11 @@
             padding:20px;
         }
 
+
     </style>
     <script src="/static/js/vendor.js"></script>
     <script src="/static/js/foundation.js"></script>
+    <script src="/static/js/jspdf.min.js"></script>
 </head>
 <body>
 
@@ -109,7 +115,7 @@
 <!-- Header Ends -->
 
 
-<div class="grid-y grid-container fluid  story">
+<div class="grid-y grid-container fluid  story" id="mainstory">
     <div class="dialog-container">
         <h3 class="heading-title1"><i class="fi-monitor"></i> Story</h3>
         <div class="dialog-container-content">
@@ -117,13 +123,21 @@
             <div id="story" class="grid-x">
             </div>
             <hr>
-            <div style="padding:10px;">
-                <h4 class="heading-title2"><i class="fi-list-bullet"></i> Story Sequence:- <button id="btnRecord" onclick="startRecord()"><i class="fi-record"></i></button></h4>
-                <textarea rows="7" id="story_sequence"></textarea>
+            <div id="actionpane">
+                <div style="padding:10px;">
+                    <h4 class="heading-title2"><i class="fi-list-bullet"></i> Story Sequence:-
+                        <button id="btnRecord" onclick="startRecord()"><i class="fi-record"></i></button>
+                    </h4>
+                    <textarea rows="7" id="story_sequence"></textarea>
+                </div>
+                <hr>
+                <button id="btnsequence" class="button" style="width:150px;"><i class="fi-page-add"></i> Enter Sequence</button>
+
+                <button id="btnnewstory" class="button" style="width:150px;"><i class="fi-plus"></i> New Story</button>
+
+                <button id="btngeneratepdf" class="button" style="width:100px;"><i class="fi-page-export-pdf"></i> PDF</button>
+
             </div>
-            <hr>
-            <button id="btnsequence" class="button" style="width:150px;"><i class="fi-page-add"></i> Enter Sequence</button>
-            <button id="btnnewstory" class="button" style="width:150px;"> <i class="fi-plus"></i> New Story</button>
         </div>
     </div>
 </div>
@@ -182,11 +196,13 @@
       lastIndex++;
     }
 
+
 </script>
 <script>
+        var cnt = 1;
+
         $(document).foundation();
         $(document).ready(function(){
-            var cnt = 1;
             $("#story_sequence").keyup(function(key){
                 if(key.code == "Enter"){
                    $("#btnsequence").click();
@@ -232,7 +248,7 @@
                         }),
                         success:function(data){
                             var target = $("#"+data.target_id);
-                            var template = "<p align='center'><img src='"+data.output_url+"' style='height:200px;' /></p>";
+                            var template = "<p align='center'><img id='img_"+data.target_id+"' src='"+data.output_url+"' style='height:200px;' /></p>";
                             target.html("");
                             target.append(template);
                         },
@@ -257,7 +273,7 @@
                     }),
                     success:function(data){
                         var target = $("#"+data.target_id);
-                        var template = "<p align='center'><img src='"+data.output_url+"' style='height:200px;' /></p>";
+                        var template = "<p align='center'><img id='img_"+data.target_id+"' src='"+data.output_url+"' style='height:200px;' /></p>";
                         target.html("");
                         target.append(template);
                     },
@@ -268,8 +284,21 @@
             });
         });
 
+</script>
+
+<script>
+    $("#btngeneratepdf").click(function(){
+        $("#actionpane").hide();
+        $(".button").hide();
+        $("footer").hide();
+        window.print();
+        $("#actionpane").show();
+        $(".button").show();
+        $("footer").show();
+    });
 
 
 </script>
+
 </body>
 </html>
