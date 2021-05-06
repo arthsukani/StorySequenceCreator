@@ -8,12 +8,13 @@
     <style>
         @page {
             size: A4 landscape;
-            margin:0 -6cm;
+            margin:0 0cm;
         }
         .top-bar,.top-bar-left ul,.top-bar-right ul{
             background-color:#4040A7;
             color:white;
         }
+
         .top-bar a{
             color:white !important;
         }
@@ -73,8 +74,18 @@
             align-items:center;
             padding:20px;
         }
-
-
+        body{
+            font-family:Open Sans !important;
+        }
+        @media print{
+            .cell{
+                float:left;
+                page-break-inside:avoid;
+            }
+            .grid-x{
+                display:block;
+            }
+        }
     </style>
     <script src="/static/js/vendor.js"></script>
     <script src="/static/js/foundation.js"></script>
@@ -120,7 +131,7 @@
         <h3 class="heading-title1"><i class="fi-monitor"></i> Story</h3>
         <div class="dialog-container-content">
             <hr>
-            <div id="story" class="grid-x">
+            <div id="story" class="grid-x grid-margin-x">
             </div>
             <hr>
             <div id="actionpane">
@@ -260,7 +271,7 @@
             $("#btnsequence").click(function(){
                 var data = $("#story_sequence").val();
                 $("#story_sequence").val("");
-                $("#story").append("<div id='row_container_"+cnt+"' style='border:1px solid inset; padding:5px' class='cell medium-3 large-2'><div class='card'> <div class='card-divider'> <div class='badge'>"+cnt+"</div><span id='title_"+cnt+"'> "+data+" </span></div><div class='sub-dialog' id='row_"+cnt+"'>Loading..</div>  <div class='card-section'><div class='small button-group'> <a class='button secondary action-btn-reset' data-val='row_"+cnt+"' data-title='title_"+cnt+"'><i class='fi-refresh'></i> Reset</a> <a class='button alert action-btn-delete' data-val='row_container_"+cnt+"'><i class='fi-trash'></i> Delete</a> </div> </div> </div> </div>");
+                $("#story").append("<div id='row_container_"+cnt+"' style='border:1px solid inset; padding:5px' class='cell medium-3 large-3 avoidbreak'><div class='card'> <div class='card-divider'> <div class='badge'>"+cnt+"</div><span id='title_"+cnt+"'> "+data+" </span></div><div class='sub-dialog' id='row_"+cnt+"'>Loading..</div>  <div class='card-section'><div class='small button-group'> <a class='button secondary action-btn-reset' data-val='row_"+cnt+"' data-title='title_"+cnt+"'><i class='fi-refresh'></i> Reset</a> <a class='button alert action-btn-delete' data-val='row_container_"+cnt+"'><i class='fi-trash'></i> Delete</a> </div> </div> </div> </div>");
                 $.ajax({
                     url:"http://localhost:5000/GetData",
                     type:"post",
